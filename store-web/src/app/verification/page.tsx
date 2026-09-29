@@ -99,9 +99,9 @@ export default function VerificationPage() {
   const [remarks, setRemarks] = useState('');
 
   // Stores Query
-  const { data: stores } = useQuery<StoreSiteResponse[]>({
+  const { data: stores } = useQuery<PageResponse<StoreSiteResponse>>({
     queryKey: ['stores-lookup'],
-    queryFn: () => api.get<StoreSiteResponse[]>('/api/store/store-sites'),
+    queryFn: () => api.get<PageResponse<StoreSiteResponse>>('/api/store/stores?size=200'),
   });
 
   // Verifications Query
@@ -441,7 +441,7 @@ export default function VerificationPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All Stores</SelectItem>
-                  {stores?.map((s) => (
+                  {stores?.content.map((s) => (
                     <SelectItem key={s.id} value={s.id}>
                       {s.storeName}
                     </SelectItem>
@@ -496,7 +496,7 @@ export default function VerificationPage() {
                     <SelectValue placeholder="Select Store" />
                   </SelectTrigger>
                   <SelectContent>
-                    {stores?.map((s) => (
+                    {stores?.content.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
                         {s.storeName}
                       </SelectItem>

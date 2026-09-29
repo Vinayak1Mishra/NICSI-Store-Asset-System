@@ -96,9 +96,9 @@ export default function StockTransferPage() {
   const [receiveQuantities, setReceiveQuantities] = useState<Record<string, number>>({});
 
   // Reference Queries
-  const { data: stores } = useQuery<StoreSiteResponse[]>({
+  const { data: stores } = useQuery<PageResponse<StoreSiteResponse>>({
     queryKey: ['stores-lookup'],
-    queryFn: () => api.get<StoreSiteResponse[]>('/api/store/store-sites'),
+    queryFn: () => api.get<PageResponse<StoreSiteResponse>>('/api/store/stores?size=200'),
   });
 
   const { data: items } = useQuery<PageResponse<ItemResponse>>({
@@ -106,15 +106,15 @@ export default function StockTransferPage() {
     queryFn: () => api.get<PageResponse<ItemResponse>>('/api/store/items?size=200'),
   });
 
-  const { data: sourceLocations } = useQuery<StorageLocationResponse[]>({
+  const { data: sourceLocations } = useQuery<PageResponse<StorageLocationResponse>>({
     queryKey: ['source-locations', sourceStoreId],
-    queryFn: () => api.get<StorageLocationResponse[]>(`/api/store/storage-locations?storeId=${sourceStoreId}`),
+    queryFn: () => api.get<PageResponse<StorageLocationResponse>>(`/api/store/locations?storeId=${sourceStoreId}&size=200`),
     enabled: !!sourceStoreId,
   });
 
-  const { data: destLocations } = useQuery<StorageLocationResponse[]>({
+  const { data: destLocations } = useQuery<PageResponse<StorageLocationResponse>>({
     queryKey: ['dest-locations', destinationStoreId],
-    queryFn: () => api.get<StorageLocationResponse[]>(`/api/store/storage-locations?storeId=${destinationStoreId}`),
+    queryFn: () => api.get<PageResponse<StorageLocationResponse>>(`/api/store/locations?storeId=${destinationStoreId}&size=200`),
     enabled: !!destinationStoreId,
   });
 
@@ -500,7 +500,7 @@ export default function StockTransferPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All Stores</SelectItem>
-                  {stores?.map((s) => (
+                  {stores?.content?.map((s) => (
                     <SelectItem key={s.id} value={s.id}>
                       {s.storeName}
                     </SelectItem>
@@ -544,7 +544,7 @@ export default function StockTransferPage() {
                     <SelectValue placeholder="Select Origin Store" />
                   </SelectTrigger>
                   <SelectContent>
-                    {stores?.map((s) => (
+                    {stores?.content?.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
                         {s.storeName}
                       </SelectItem>
@@ -560,7 +560,7 @@ export default function StockTransferPage() {
                     <SelectValue placeholder="Select Destination" />
                   </SelectTrigger>
                   <SelectContent>
-                    {stores
+                    {stores?.content
                       ?.filter((s) => s.id !== sourceStoreId)
                       .map((s) => (
                         <SelectItem key={s.id} value={s.id}>
@@ -655,7 +655,7 @@ export default function StockTransferPage() {
                           <SelectValue placeholder="Source Rack/Bin" />
                         </SelectTrigger>
                         <SelectContent>
-                          {sourceLocations?.map((loc) => (
+                          {sourceLocations?.content?.map((loc) => (
                             <SelectItem key={loc.id} value={loc.id}>
                               {loc.locationCode} - {loc.locationName}
                             </SelectItem>
@@ -679,7 +679,7 @@ export default function StockTransferPage() {
                           <SelectValue placeholder="Dest Rack/Bin" />
                         </SelectTrigger>
                         <SelectContent>
-                          {destLocations?.map((loc) => (
+                          {destLocations?.content?.map((loc) => (
                             <SelectItem key={loc.id} value={loc.id}>
                               {loc.locationCode} - {loc.locationName}
                             </SelectItem>

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
 import { PackageCheck, RefreshCw, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -136,7 +135,7 @@ export default function ReturnsReportPage() {
                     <tr key={row.id} className="hover:bg-muted/20 transition-colors">
                       <td className="px-4 py-3 font-mono font-medium">{row.return_no}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        {format(new Date(row.return_date), 'dd MMM yyyy')}
+                        {row.return_date ? new Date(row.return_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                       </td>
                       <td className="px-4 py-3">
                         <span className="font-medium">{row.store_code}</span>

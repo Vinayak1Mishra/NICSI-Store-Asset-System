@@ -48,10 +48,8 @@ export function useAuth() {
         roles: [username === 'admin' ? 'ROLE_ADMIN' : 'ROLE_STORE_OFFICER'],
         permissions: ['ITEM_VIEW', 'ITEM_CREATE', 'ITEM_UPDATE', 'STORE_ADMIN'],
       };
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('nicsi_token', 'dev-mock-token');
-        sessionStorage.setItem('nicsi_user', JSON.stringify(mock));
-      }
+      // NOTE: intentionally NOT persisting the mock token to sessionStorage
+      // so that on next load the hook will attempt a real login against the backend.
       setUser(mock);
       return mock;
     }
@@ -61,7 +59,11 @@ export function useAuth() {
     if (typeof window === 'undefined') return;
     const token = sessionStorage.getItem('nicsi_token');
     const userData = sessionStorage.getItem('nicsi_user');
-    if (token && userData) {
+    // Discard any stale mock token — always re-fetch a real token from the backend.
+    if (token === 'dev-mock-token') {
+      sessionStorage.removeItem('nicsi_token');
+      sessionStorage.removeItem('nicsi_user');
+    } else if (token && userData) {
       try {
         setUser(JSON.parse(userData));
         setIsLoading(false);

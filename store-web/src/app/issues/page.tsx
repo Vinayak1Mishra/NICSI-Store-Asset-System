@@ -120,19 +120,19 @@ export default function IssuesPage() {
     },
   });
 
-  const { data: stores } = useQuery<StoreSiteResponse[]>({
+  const { data: stores } = useQuery<PageResponse<StoreSiteResponse>>({
     queryKey: ['stores-list'],
-    queryFn: () => api.get('/api/store/masters/stores'),
+    queryFn: () => api.get('/api/store/stores?size=200'),
   });
 
   const { data: itemsPage } = useQuery<PageResponse<ItemResponse>>({
     queryKey: ['items-list'],
-    queryFn: () => api.get('/api/store/masters/items?size=100'),
+    queryFn: () => api.get('/api/store/items?size=100'),
   });
 
-  const { data: locations } = useQuery<StorageLocationResponse[]>({
+  const { data: locationsPage } = useQuery<PageResponse<StorageLocationResponse>>({
     queryKey: ['locations-by-store', storeId],
-    queryFn: () => api.get(`/api/store/masters/locations?storeId=${storeId}`),
+    queryFn: () => api.get(`/api/store/locations?storeId=${storeId}&size=200`),
     enabled: Boolean(storeId),
   });
 
@@ -568,7 +568,7 @@ export default function IssuesPage() {
                     <SelectValue placeholder="Select warehouse..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {stores?.map((s) => (
+                    {stores?.content.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
                         {s.storeName} ({s.storeCode})
                       </SelectItem>
@@ -659,7 +659,7 @@ export default function IssuesPage() {
                       <SelectValue placeholder={storeId ? 'Select rack...' : 'Select store first'} />
                     </SelectTrigger>
                     <SelectContent>
-                      {locations?.map((loc) => (
+                      {locationsPage?.content.map((loc) => (
                         <SelectItem key={loc.id} value={loc.id}>
                           {loc.locationCode} - {loc.locationName}
                         </SelectItem>

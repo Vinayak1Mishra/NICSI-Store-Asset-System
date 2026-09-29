@@ -37,9 +37,9 @@ export default function ProjectAssetsPage() {
   const [conditionFilter, setConditionFilter] = useState('ALL');
   const [page, setPage] = useState(0);
 
-  const { data: stores } = useQuery<StoreSiteResponse[]>({
+  const { data: stores } = useQuery<PageResponse<StoreSiteResponse>>({
     queryKey: ['stores-lookup'],
-    queryFn: () => api.get<StoreSiteResponse[]>('/api/store/store-sites'),
+    queryFn: () => api.get<PageResponse<StoreSiteResponse>>('/api/store/stores?size=200'),
   });
 
   const { data: assetsPage, isLoading } = useQuery<PageResponse<AssetSummaryResponse>>({
@@ -221,7 +221,7 @@ export default function ProjectAssetsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All Sites & Stores</SelectItem>
-                  {stores?.map((s) => (
+                  {stores?.content.map((s) => (
                     <SelectItem key={s.id} value={s.id}>
                       {s.storeName}
                     </SelectItem>

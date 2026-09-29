@@ -98,7 +98,7 @@ export default function SoftwareLicensesPage() {
 
   const { data: itemsPage } = useQuery<PageResponse<ItemResponse>>({
     queryKey: ['items-software-list'],
-    queryFn: () => api.get('/api/store/masters/items?size=100'),
+    queryFn: () => api.get('/api/store/items?size=100'),
   });
 
   const { data: selectedLicense, isLoading: loadingDetail } = useQuery<SoftwareLicenseResponse>({

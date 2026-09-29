@@ -98,11 +98,17 @@ public class DisposalService {
         d.setPostedBy(CurrentUserHolder.getUserId());
         d.setPostedAt(Instant.now());
 
-        // Update asset statuses to DISPOSED
+        // Update asset statuses to DISPOSED.
+        // condition_status is constrained to
+        // ('NEW','GOOD','WORKING','FAIR','DAMAGED','REPAIR_REQUIRED','UNSERVICEABLE','SCRAP')
+        // by asset_condition_status_check in V5__fulfilment_asset_lifecycle.sql. Writing
+        // "DISPOSED" here raised a check-constraint violation and rolled back the whole
+        // posting transaction. SCRAP is the value the asset/api disposal path
+        // (AssetRegistrationService.disposeAsset) already uses for the same outcome.
         for (DisposalItem item : d.getItems()) {
             Asset asset = item.getAsset();
             asset.setAssetStatus("DISPOSED");
-            asset.setConditionStatus("DISPOSED");
+            asset.setConditionStatus("SCRAP");
             assetRepository.save(asset);
         }
 

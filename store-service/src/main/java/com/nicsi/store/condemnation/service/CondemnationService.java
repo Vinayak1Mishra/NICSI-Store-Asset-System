@@ -4,6 +4,8 @@ import com.nicsi.store.asset.domain.Asset;
 import com.nicsi.store.asset.repository.AssetRepository;
 import com.nicsi.store.common.error.BusinessException;
 import com.nicsi.store.common.numbering.DocumentNumberService;
+import com.nicsi.store.common.rules.MakerCheckerGuard;
+import com.nicsi.store.common.rules.MakerCheckerOperation;
 import com.nicsi.store.common.security.CurrentUserHolder;
 import com.nicsi.store.common.web.PageResponse;
 import com.nicsi.store.condemnation.domain.Condemnation;
@@ -30,13 +32,16 @@ public class CondemnationService {
     private final CondemnationRepository condemnationRepository;
     private final AssetRepository assetRepository;
     private final DocumentNumberService documentNumberService;
+    private final MakerCheckerGuard makerCheckerGuard;
 
     public CondemnationService(CondemnationRepository condemnationRepository,
                                AssetRepository assetRepository,
-                               DocumentNumberService documentNumberService) {
+                               DocumentNumberService documentNumberService,
+                               MakerCheckerGuard makerCheckerGuard) {
         this.condemnationRepository = condemnationRepository;
         this.assetRepository = assetRepository;
         this.documentNumberService = documentNumberService;
+        this.makerCheckerGuard = makerCheckerGuard;
     }
 
     @Transactional
@@ -80,6 +85,8 @@ public class CondemnationService {
         if (!"SUBMITTED".equals(c.getStatus())) {
             throw new BusinessException("Only SUBMITTED condemnation can be recommended", HttpStatus.CONFLICT);
         }
+        makerCheckerGuard.assertDifferentUser(c.getCreatedBy(), CurrentUserHolder.getUserId(),
+                MakerCheckerOperation.CONDEMNATION);
         c.setStatus("TECHNICALLY_RECOMMENDED");
         return toResponse(condemnationRepository.save(c));
     }
@@ -90,6 +97,12 @@ public class CondemnationService {
         if (!"SUBMITTED".equals(c.getStatus()) && !"TECHNICALLY_RECOMMENDED".equals(c.getStatus())) {
             throw new BusinessException("Condemnation must be SUBMITTED or TECHNICALLY_RECOMMENDED to approve", HttpStatus.CONFLICT);
         }
+        // The proposer must not be the approver. Without this, one user could create,
+        // submit and approve their own condemnation; verified at runtime with the
+        // response echoing the same UUID in createdBy and approvedBy.
+        // created_by is NOT NULL, so the guard's null branch cannot misfire here.
+        makerCheckerGuard.assertDifferentUser(c.getCreatedBy(), CurrentUserHolder.getUserId(),
+                MakerCheckerOperation.CONDEMNATION);
         c.setStatus("APPROVED");
         c.setApprovedBy(CurrentUserHolder.getUserId());
         c.setApprovedAt(Instant.now());

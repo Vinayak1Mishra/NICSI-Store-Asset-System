@@ -65,20 +65,20 @@ export default function EmployeeAssetsPage() {
     {
       accessorKey: 'asset_code',
       header: 'Asset Code',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-mono text-xs font-semibold text-blue-600 dark:text-blue-400">
-          {row.original.asset_code}
+          {row.asset_code}
         </span>
       ),
     },
     {
       accessorKey: 'item_name',
       header: 'Equipment / Description',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div>
-          <p className="font-medium text-slate-900 dark:text-slate-100">{row.original.item_name}</p>
+          <p className="font-medium text-slate-900 dark:text-slate-100">{row.item_name}</p>
           <p className="text-[11px] text-slate-500 font-mono">
-            {row.original.item_code} · SN: {row.original.serial_number || 'N/A'}
+            {row.item_code} · SN: {row.serial_number || 'N/A'}
           </p>
         </div>
       ),
@@ -86,36 +86,36 @@ export default function EmployeeAssetsPage() {
     {
       accessorKey: 'employee_name',
       header: 'Assigned Employee / Custodian',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div>
-          <p className="font-medium text-slate-900 dark:text-slate-100">{row.original.employee_name}</p>
-          <p className="text-[11px] text-slate-500 font-mono">{row.original.employee_id}</p>
+          <p className="font-medium text-slate-900 dark:text-slate-100">{row.employee_name}</p>
+          <p className="text-[11px] text-slate-500 font-mono">{row.employee_id}</p>
         </div>
       ),
     },
     {
       accessorKey: 'assigned_from',
       header: 'Assigned Date',
-      cell: ({ row }) => (
-        <span className="text-xs text-slate-500">{row.original.assigned_from}</span>
+      cell: (row) => (
+        <span className="text-xs text-slate-500">{row.assigned_from}</span>
       ),
     },
     {
       accessorKey: 'condition_status',
       header: 'Condition',
-      cell: ({ row }) => <StatusBadge status={row.original.condition_status || 'GOOD'} />,
+      cell: (row) => <StatusBadge status={row.condition_status || 'GOOD'} />,
     },
     {
       accessorKey: 'asset_status',
       header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.original.asset_status} />,
+      cell: (row) => <StatusBadge status={row.asset_status} />,
     },
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div className="flex items-center gap-1.5">
-          <Link href={`/returns?assetCode=${encodeURIComponent(row.original.asset_code)}`}>
+          <Link href={`/returns?assetCode=${encodeURIComponent(row.asset_code)}`}>
             <Button variant="outline" size="sm" className="h-7 text-xs text-emerald-600 hover:text-emerald-700">
               <RotateCcw className="size-3 mr-1" /> Return
             </Button>
@@ -214,8 +214,8 @@ export default function EmployeeAssetsPage() {
           <DataTable
             columns={columns}
             data={filtered}
-            pageCount={1}
-            pageIndex={0}
+            totalPages={1}
+            page={0}
             pageSize={50}
             onPageChange={() => {}}
             isLoading={isLoading}

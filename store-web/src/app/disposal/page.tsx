@@ -266,38 +266,38 @@ export default function DisposalPage() {
     {
       accessorKey: 'condemnationNo',
       header: 'Proposal No',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-semibold text-blue-600 dark:text-blue-400 font-mono text-xs">
-          {row.original.condemnationNo}
+          {row.condemnationNo}
         </span>
       ),
     },
     {
       accessorKey: 'technicalReason',
       header: 'Technical Justification',
-      cell: ({ row }) => (
-        <p className="text-xs truncate max-w-xs">{row.original.technicalReason}</p>
+      cell: (row) => (
+        <p className="text-xs truncate max-w-xs">{row.technicalReason}</p>
       ),
     },
     {
       accessorKey: 'itemCount',
       header: 'Assets',
-      cell: ({ row }) => (
+      cell: (row) => (
         <Badge variant="secondary" className="font-mono text-xs">
-          {row.original.itemCount || 1} items
+          {row.itemCount || 1} items
         </Badge>
       ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: (row) => <StatusBadge status={row.status} />,
     },
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => {
-        const item = row.original;
+      cell: (row) => {
+        const item = row;
         return (
           <div className="flex items-center gap-1.5">
             <Button
@@ -349,47 +349,47 @@ export default function DisposalPage() {
     {
       accessorKey: 'disposalNo',
       header: 'Disposal No',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-semibold text-blue-600 dark:text-blue-400 font-mono text-xs">
-          {row.original.disposalNo}
+          {row.disposalNo}
         </span>
       ),
     },
     {
       accessorKey: 'disposalMethod',
       header: 'Method',
-      cell: ({ row }) => (
+      cell: (row) => (
         <Badge variant="outline" className="text-xs">
-          {row.original.disposalMethod}
+          {row.disposalMethod}
         </Badge>
       ),
     },
     {
       accessorKey: 'purchaserNameSnapshot',
       header: 'Purchaser / Vendor',
-      cell: ({ row }) => (
-        <span className="text-xs font-medium">{row.original.purchaserNameSnapshot || 'E-Auction'}</span>
+      cell: (row) => (
+        <span className="text-xs font-medium">{row.purchaserNameSnapshot || 'E-Auction'}</span>
       ),
     },
     {
       accessorKey: 'saleAmount',
       header: 'Realized Value',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-mono text-xs font-bold text-emerald-600">
-          ₹{row.original.saleAmount?.toLocaleString() || '0.00'}
+          ₹{row.saleAmount?.toLocaleString() || '0.00'}
         </span>
       ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: (row) => <StatusBadge status={row.status} />,
     },
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => {
-        const item = row.original;
+      cell: (row) => {
+        const item = row;
         return (
           <div className="flex items-center gap-1.5">
             <Button
@@ -492,8 +492,8 @@ export default function DisposalPage() {
               <DataTable
                 columns={condemnationColumns}
                 data={condemnationsPage?.content || []}
-                pageCount={condemnationsPage?.totalPages || 1}
-                pageIndex={0}
+                totalPages={condemnationsPage?.totalPages || 1}
+                page={0}
                 pageSize={20}
                 onPageChange={() => {}}
                 isLoading={loadingCondemnations}
@@ -508,8 +508,8 @@ export default function DisposalPage() {
               <DataTable
                 columns={disposalColumns}
                 data={disposalsPage?.content || []}
-                pageCount={disposalsPage?.totalPages || 1}
-                pageIndex={0}
+                totalPages={disposalsPage?.totalPages || 1}
+                page={0}
                 pageSize={20}
                 onPageChange={() => {}}
                 isLoading={loadingDisposals}

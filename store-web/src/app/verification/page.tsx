@@ -223,38 +223,37 @@ export default function VerificationPage() {
     {
       accessorKey: 'verificationNo',
       header: 'Session No',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-semibold text-blue-600 dark:text-blue-400 font-mono text-xs">
-          {row.original.verificationNo}
+          {row.verificationNo}
         </span>
       ),
     },
     {
       accessorKey: 'verificationName',
       header: 'Session Name',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div>
-          <p className="font-medium text-slate-900 dark:text-slate-100">{row.original.verificationName}</p>
-          <p className="text-[11px] text-slate-500">{row.original.verificationType} Cycle</p>
+          <p className="font-medium text-slate-900 dark:text-slate-100">{row.verificationName}</p>
+          <p className="text-[11px] text-slate-500">{row.verificationType} Cycle</p>
         </div>
       ),
     },
     {
       accessorKey: 'storeName',
       header: 'Store Site',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="flex items-center gap-1.5 text-xs font-medium">
           <Building2 className="size-3.5 text-slate-400" />
-          {row.original.storeName}
+          {row.storeName}
         </span>
       ),
     },
     {
-      accessorKey: 'progress',
       header: 'Progress',
-      cell: ({ row }) => {
-        const total = row.original.totalItems || 1;
-        const counted = row.original.countedItems || 0;
+      cell: (row) => {
+        const total = row.totalItems || 1;
+        const counted = row.countedItems || 0;
         const pct = Math.round((counted / total) * 100);
         return (
           <div className="w-28 space-y-1">
@@ -272,13 +271,13 @@ export default function VerificationPage() {
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: (row) => <StatusBadge status={row.status} />,
     },
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => {
-        const item = row.original;
+      cell: (row) => {
+        const item = row;
         return (
           <div className="flex items-center gap-1.5">
             <Button
@@ -455,8 +454,8 @@ export default function VerificationPage() {
           <DataTable
             columns={columns}
             data={verificationsPage?.content || []}
-            pageCount={verificationsPage?.totalPages || 1}
-            pageIndex={page}
+            totalPages={verificationsPage?.totalPages || 1}
+            page={page}
             pageSize={15}
             onPageChange={setPage}
             isLoading={isLoading}

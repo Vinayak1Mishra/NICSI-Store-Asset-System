@@ -154,38 +154,38 @@ export default function WarrantyPage() {
     {
       accessorKey: 'contractNumber',
       header: 'Contract No',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-semibold text-blue-600 dark:text-blue-400 font-mono text-xs">
-          {row.original.contractNumber}
+          {row.contractNumber}
         </span>
       ),
     },
     {
       accessorKey: 'contractType',
       header: 'Type',
-      cell: ({ row }) => (
+      cell: (row) => (
         <Badge
           variant="outline"
           className={
-            row.original.contractType === 'AMC'
+            row.contractType === 'AMC'
               ? 'bg-purple-50 text-purple-700 border-purple-200'
               : 'bg-blue-50 text-blue-700 border-blue-200'
           }
         >
-          {row.original.contractType}
+          {row.contractType}
         </Badge>
       ),
     },
     {
       accessorKey: 'assetCode',
       header: 'Asset',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div>
           <p className="font-semibold text-slate-900 dark:text-slate-100 font-mono text-xs">
-            {row.original.assetCode}
+            {row.assetCode}
           </p>
           <p className="text-[11px] text-slate-500 truncate max-w-[200px]">
-            {row.original.itemName}
+            {row.itemName}
           </p>
         </div>
       ),
@@ -193,23 +193,23 @@ export default function WarrantyPage() {
     {
       accessorKey: 'vendorNameSnapshot',
       header: 'Provider / Vendor',
-      cell: ({ row }) => (
-        <span className="text-xs font-medium">{row.original.vendorNameSnapshot || 'OEM Direct'}</span>
+      cell: (row) => (
+        <span className="text-xs font-medium">{row.vendorNameSnapshot || 'OEM Direct'}</span>
       ),
     },
     {
       accessorKey: 'endDate',
       header: 'Valid Till',
-      cell: ({ row }) => {
+      cell: (row) => {
         const isExpiringSoon =
-          new Date(row.original.endDate).getTime() - Date.now() < 30 * 24 * 60 * 60 * 1000;
+          new Date(row.endDate).getTime() - Date.now() < 30 * 24 * 60 * 60 * 1000;
         return (
           <span
             className={`text-xs font-medium ${
               isExpiringSoon ? 'text-amber-600 font-bold' : 'text-slate-600'
             }`}
           >
-            {row.original.endDate}
+            {row.endDate}
           </span>
         );
       },
@@ -217,16 +217,16 @@ export default function WarrantyPage() {
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.original.status || 'ACTIVE'} />,
+      cell: (row) => <StatusBadge status={row.status || 'ACTIVE'} />,
     },
     {
       id: 'actions',
       header: 'Action',
-      cell: ({ row }) => (
+      cell: (row) => (
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setViewId(row.original.id)}
+          onClick={() => setViewId(row.id)}
           className="h-8 px-2"
         >
           <Eye className="size-3.5 mr-1" /> View
@@ -339,8 +339,8 @@ export default function WarrantyPage() {
           <DataTable
             columns={columns}
             data={warrantiesPage?.content || []}
-            pageCount={warrantiesPage?.totalPages || 1}
-            pageIndex={page}
+            totalPages={warrantiesPage?.totalPages || 1}
+            page={page}
             pageSize={15}
             onPageChange={setPage}
             isLoading={isLoading}

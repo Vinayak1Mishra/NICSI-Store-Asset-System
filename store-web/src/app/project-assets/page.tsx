@@ -60,64 +60,64 @@ export default function ProjectAssetsPage() {
     {
       accessorKey: 'assetCode',
       header: 'Asset Code',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-mono text-xs font-semibold text-blue-600 dark:text-blue-400">
-          {row.original.assetCode}
+          {row.assetCode}
         </span>
       ),
     },
     {
       accessorKey: 'itemName',
       header: 'Hardware / Facility Item',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div>
-          <p className="font-medium text-slate-900 dark:text-slate-100">{row.original.itemName}</p>
+          <p className="font-medium text-slate-900 dark:text-slate-100">{row.itemName}</p>
           <p className="text-[11px] text-slate-500 font-mono">
-            {row.original.itemCode} · SN: {row.original.serialNumber || 'N/A'}
+            {row.itemCode} · SN: {row.serialNumber || 'N/A'}
           </p>
         </div>
       ),
     },
     {
-      accessorKey: 'storeName',
+      accessorKey: 'storeCode',
       header: 'Project Store / Site',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="flex items-center gap-1.5 text-xs font-medium">
           <Building2 className="size-3.5 text-slate-400" />
-          {row.original.storeName}
+          {row.storeCode}
         </span>
       ),
     },
     {
       accessorKey: 'locationCode',
       header: 'Rack / Bay',
-      cell: ({ row }) => (
+      cell: (row) => (
         <Badge variant="outline" className="font-mono text-xs">
-          {row.original.locationCode}
+          {row.locationCode}
         </Badge>
       ),
     },
     {
       accessorKey: 'conditionStatus',
       header: 'Condition',
-      cell: ({ row }) => <StatusBadge status={row.original.conditionStatus} />,
+      cell: (row) => <StatusBadge status={row.conditionStatus} />,
     },
     {
       accessorKey: 'assetStatus',
       header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.original.assetStatus} />,
+      cell: (row) => <StatusBadge status={row.assetStatus} />,
     },
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div className="flex items-center gap-1.5">
           <Link href="/asset-transfer">
             <Button variant="outline" size="sm" className="h-7 text-xs text-blue-600 hover:text-blue-700">
               <ArrowRightLeft className="size-3 mr-1" /> Reallocate
             </Button>
           </Link>
-          <Link href={`/returns?assetCode=${encodeURIComponent(row.original.assetCode)}`}>
+          <Link href={`/returns?assetCode=${encodeURIComponent(row.assetCode)}`}>
             <Button variant="ghost" size="sm" className="h-7 text-xs text-slate-600 hover:text-slate-800">
               <RotateCcw className="size-3 mr-1" /> Demobilize
             </Button>
@@ -249,8 +249,8 @@ export default function ProjectAssetsPage() {
           <DataTable
             columns={columns}
             data={assetsPage?.content || []}
-            pageCount={assetsPage?.totalPages || 1}
-            pageIndex={page}
+            totalPages={assetsPage?.totalPages || 1}
+            page={page}
             pageSize={15}
             onPageChange={setPage}
             isLoading={isLoading}

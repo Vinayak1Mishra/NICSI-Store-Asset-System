@@ -20,6 +20,7 @@ export interface ColumnDef<T> {
   cell?: (row: T) => React.ReactNode;
   className?: string;
   key?: string;
+  id?: string;
   render?: (value: any, row?: T) => React.ReactNode;
 }
 

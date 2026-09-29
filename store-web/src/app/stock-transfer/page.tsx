@@ -271,58 +271,58 @@ export default function StockTransferPage() {
     {
       accessorKey: 'transferNo',
       header: 'Transfer No',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-semibold text-blue-600 dark:text-blue-400">
-          {row.original.transferNo}
+          {row.transferNo}
         </span>
       ),
     },
     {
       accessorKey: 'sourceStoreName',
       header: 'Source Store',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="flex items-center gap-1.5 font-medium">
           <Building2 className="size-3.5 text-slate-400" />
-          {row.original.sourceStoreName}
+          {row.sourceStoreName}
         </span>
       ),
     },
     {
       accessorKey: 'destinationStoreName',
       header: 'Destination Store',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="flex items-center gap-1.5 font-medium">
           <Building2 className="size-3.5 text-amber-500" />
-          {row.original.destinationStoreName}
+          {row.destinationStoreName}
         </span>
       ),
     },
     {
       accessorKey: 'transferDate',
       header: 'Date',
-      cell: ({ row }) => (
-        <span className="text-xs text-slate-500">{row.original.transferDate}</span>
+      cell: (row) => (
+        <span className="text-xs text-slate-500">{row.transferDate}</span>
       ),
     },
     {
       accessorKey: 'itemCount',
       header: 'Lines',
-      cell: ({ row }) => (
+      cell: (row) => (
         <Badge variant="secondary" className="font-mono text-xs">
-          {row.original.itemCount || 1} items
+          {row.itemCount || 1} items
         </Badge>
       ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: (row) => <StatusBadge status={row.status} />,
     },
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => {
-        const item = row.original;
+      cell: (row) => {
+        const item = row;
         return (
           <div className="flex items-center gap-1.5">
             <Button
@@ -513,8 +513,8 @@ export default function StockTransferPage() {
           <DataTable
             columns={columns}
             data={transfersPage?.content || []}
-            pageCount={transfersPage?.totalPages || 1}
-            pageIndex={page}
+            totalPages={transfersPage?.totalPages || 1}
+            page={page}
             pageSize={15}
             onPageChange={setPage}
             isLoading={isLoading}

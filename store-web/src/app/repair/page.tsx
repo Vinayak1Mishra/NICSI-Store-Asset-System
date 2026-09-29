@@ -199,22 +199,22 @@ export default function RepairPage() {
     {
       accessorKey: 'repairNo',
       header: 'Ticket No',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-semibold text-blue-600 dark:text-blue-400 font-mono text-xs">
-          {row.original.repairNo}
+          {row.repairNo}
         </span>
       ),
     },
     {
       accessorKey: 'assetCode',
       header: 'Asset',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div>
           <p className="font-semibold text-slate-900 dark:text-slate-100 font-mono text-xs">
-            {row.original.assetCode}
+            {row.assetCode}
           </p>
           <p className="text-[11px] text-slate-500 truncate max-w-[200px]">
-            {row.original.itemName}
+            {row.itemName}
           </p>
         </div>
       ),
@@ -222,15 +222,15 @@ export default function RepairPage() {
     {
       accessorKey: 'complaintDate',
       header: 'Complaint Date',
-      cell: ({ row }) => (
-        <span className="text-xs text-slate-500">{row.original.complaintDate}</span>
+      cell: (row) => (
+        <span className="text-xs text-slate-500">{row.complaintDate}</span>
       ),
     },
     {
       accessorKey: 'warrantyClaim',
       header: 'Warranty Claim',
-      cell: ({ row }) =>
-        row.original.warrantyClaim ? (
+      cell: (row) =>
+        row.warrantyClaim ? (
           <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
             Warranty
           </Badge>
@@ -243,35 +243,35 @@ export default function RepairPage() {
     {
       accessorKey: 'repairCost',
       header: 'Cost',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="text-xs font-mono font-medium">
-          {row.original.repairCost ? `₹${row.original.repairCost.toLocaleString()}` : '—'}
+          {row.repairCost ? `₹${row.repairCost.toLocaleString()}` : '—'}
         </span>
       ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: (row) => <StatusBadge status={row.status} />,
     },
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div className="flex items-center gap-1.5">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setViewId(row.original.id)}
+            onClick={() => setViewId(row.id)}
             className="h-8 px-2"
           >
             <Eye className="size-3.5 mr-1" /> View
           </Button>
-          {row.original.status !== 'COMPLETED' && row.original.status !== 'UNREPAIRABLE' && (
+          {row.status !== 'COMPLETED' && row.status !== 'UNREPAIRABLE' && (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => openUpdateModal(row.original)}
+              onClick={() => openUpdateModal(row)}
               className="h-8 px-2 text-blue-600"
             >
               <Edit3 className="size-3.5 mr-1" /> Update
@@ -386,8 +386,8 @@ export default function RepairPage() {
           <DataTable
             columns={columns}
             data={repairsPage?.content || []}
-            pageCount={repairsPage?.totalPages || 1}
-            pageIndex={page}
+            totalPages={repairsPage?.totalPages || 1}
+            page={page}
             pageSize={15}
             onPageChange={setPage}
             isLoading={isLoading}

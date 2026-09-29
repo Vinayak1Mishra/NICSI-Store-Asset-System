@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/lib/api';
+import { api } from '@/lib/api-client';
 
 interface ReturnSummaryRow {
   id: string;
@@ -47,8 +47,7 @@ export default function ReturnsReportPage() {
       if (applied.status !== 'ALL') params.set('status', applied.status);
       if (applied.from) params.set('from', applied.from);
       if (applied.to)   params.set('to',   applied.to);
-      const res = await api.get(`/reports/returns/summary?${params.toString()}`);
-      return res.data;
+      return api.get<ReturnSummaryRow[]>(`/api/reports/returns/summary?${params.toString()}`);
     },
   });
 

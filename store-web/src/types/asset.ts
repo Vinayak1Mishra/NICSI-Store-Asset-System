@@ -14,6 +14,7 @@ export interface AssetSummaryResponse {
   conditionStatus: string;
   purchaseCost?: number;
   purchaseDate?: string;
+  currentCustodianName?: string;
 }
 
 export interface AssetResponse {

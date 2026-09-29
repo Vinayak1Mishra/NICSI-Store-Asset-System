@@ -117,20 +117,20 @@ export default function AssetTransferPage() {
     {
       accessorKey: 'assetCode',
       header: 'Asset Code',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="font-semibold text-blue-600 dark:text-blue-400 font-mono text-xs">
-          {row.original.assetCode}
+          {row.assetCode}
         </span>
       ),
     },
     {
       accessorKey: 'itemName',
       header: 'Equipment',
-      cell: ({ row }) => (
+      cell: (row) => (
         <div>
-          <p className="font-medium text-slate-900 dark:text-slate-100">{row.original.itemName}</p>
+          <p className="font-medium text-slate-900 dark:text-slate-100">{row.itemName}</p>
           <p className="text-[11px] text-slate-500 font-mono">
-            SN: {row.original.serialNumber || 'N/A'}
+            SN: {row.serialNumber || 'N/A'}
           </p>
         </div>
       ),
@@ -138,36 +138,36 @@ export default function AssetTransferPage() {
     {
       accessorKey: 'currentCustodianName',
       header: 'Current Custodian',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="flex items-center gap-1.5 text-xs font-medium">
           <UserCheck className="size-3.5 text-slate-400" />
-          {row.original.currentCustodianName || 'Store Custody'}
+          {row.currentCustodianName || 'Store Custody'}
         </span>
       ),
     },
     {
-      accessorKey: 'storeName',
+      accessorKey: 'storeCode',
       header: 'Home Store / Site',
-      cell: ({ row }) => (
+      cell: (row) => (
         <span className="text-xs text-slate-600 dark:text-slate-400">
-          {row.original.storeName}
+          {row.storeCode}
         </span>
       ),
     },
     {
       accessorKey: 'conditionStatus',
       header: 'Condition',
-      cell: ({ row }) => <StatusBadge status={row.original.conditionStatus} />,
+      cell: (row) => <StatusBadge status={row.conditionStatus} />,
     },
     {
       id: 'actions',
       header: 'Action',
-      cell: ({ row }) => (
+      cell: (row) => (
         <Button
           size="sm"
           className="h-8 gap-1.5 bg-blue-600 hover:bg-blue-700 text-white"
           onClick={() => {
-            setSelectedAsset(row.original);
+            setSelectedAsset(row);
             resetForm();
           }}
         >
@@ -226,8 +226,8 @@ export default function AssetTransferPage() {
           <DataTable
             columns={columns}
             data={assetsPage?.content || []}
-            pageCount={assetsPage?.totalPages || 1}
-            pageIndex={page}
+            totalPages={assetsPage?.totalPages || 1}
+            page={page}
             pageSize={15}
             onPageChange={setPage}
             isLoading={isLoading}

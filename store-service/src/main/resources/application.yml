@@ -1,0 +1,37 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: nicsi-store-service
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: store
+        jdbc:
+          time_zone: UTC
+    open-in-view: false
+  flyway:
+    schemas: store,workflow,audit
+    locations: classpath:db/migration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+server:
+  port: 8080
+nicsi:
+  security:
+    jwt-secret: ${JWT_SECRET:this-is-a-dev-only-secret-key-that-must-be-at-least-256-bits-long-for-hmac-sha}
+    token-expiry-hours: 24
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+    access-key: ${MINIO_ACCESS_KEY:minioadmin}
+    secret-key: ${MINIO_SECRET_KEY:minioadmin}
+    bucket: nicsi-documents
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

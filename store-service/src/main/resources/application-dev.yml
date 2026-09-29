@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/nicsi_store
+    username: nicsi
+    password: nicsi_dev
+  jpa:
+    show-sql: true
+logging:
+  level:
+    com.nicsi.store: DEBUG
+    org.springframework.security: DEBUG
+    org.flywaydb: DEBUG

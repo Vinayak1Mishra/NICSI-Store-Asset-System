@@ -1,0 +1,11 @@
+CREATE INDEX ix_grn_po ON store.grn(po_ref_id);
+CREATE INDEX ix_grn_status_date ON store.grn(status,grn_date DESC);
+CREATE INDEX ix_issue_req ON store.issue_header(requisition_id);
+CREATE INDEX ix_issue_user ON store.issue_header(issued_to_user_id,issue_date DESC);
+CREATE INDEX ix_assignment_asset ON store.asset_assignment(asset_id,assigned_from DESC);
+CREATE INDEX ix_assignment_user ON store.asset_assignment(assignee_user_id,status);
+CREATE INDEX ix_repair_asset ON store.repair_ticket(asset_id,complaint_date DESC);
+CREATE INDEX ix_contract_expiry ON store.support_contract(status,end_date);
+CREATE INDEX ix_license_expiry ON store.software_license(status,end_date);
+CREATE INDEX ix_verification_asset ON store.physical_verification_item(asset_id);
+CREATE INDEX ix_workflow_entity ON workflow.instance(entity_type,entity_id);

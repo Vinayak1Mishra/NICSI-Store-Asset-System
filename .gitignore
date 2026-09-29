@@ -1,0 +1,9 @@
+﻿store-service/target/
+store-web/node_modules/
+store-web/.next/
+*.log
+target-testrun.log
+.env
+.env.*
+.idea/
+.vscode/

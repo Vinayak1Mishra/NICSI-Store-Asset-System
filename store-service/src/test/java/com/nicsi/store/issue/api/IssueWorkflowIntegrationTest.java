@@ -93,6 +93,7 @@ class IssueWorkflowIntegrationTest extends BaseIntegrationTest {
 
     private String storeOperatorToken;
     private String storeManagerToken;
+    private String adminToken;
 
     // ─── Per-run unique tag for Option-A isolation (no TRUNCATE) ─────────────
 
@@ -112,6 +113,7 @@ class IssueWorkflowIntegrationTest extends BaseIntegrationTest {
 
         storeOperatorToken      = getToken("store.operator");
         storeManagerToken       = getToken("store.manager");
+        adminToken              = getToken("admin");
 
         // ── Master: Store & Location (unique per tag) ──────────────────────────
         StoreSite store = storeSiteRepository.findByStoreCodeIgnoreCase("ISS-STORE-" + tag).orElseGet(() -> {
@@ -287,7 +289,12 @@ class IssueWorkflowIntegrationTest extends BaseIntegrationTest {
         assertThat(preBal.get(0).getOnHandQty()).isEqualByComparingTo("2.000");
         assertThat(preBal.get(0).getAvgUnitCost()).isEqualByComparingTo("70000.0000");
 
-        // ── Phase 2: Create Issue DRAFT (store.operator — will be maker) ───────
+        // ── Phase 2: Create Issue DRAFT (store.manager — will be maker) ─────────
+        // store.manager is used as the maker because it is one of only two users that
+        // hold ISSUE_POST (admin is the other). The maker-checker assertion in Phase 5
+        // needs a creator who is actually permitted to reach it: store.operator holds
+        // ISSUE_CREATE only, so it is now stopped at the @PreAuthorize gate before
+        // IssueService ever evaluates the maker-checker rule.
         UUID employeeId = UUID.nameUUIDFromBytes(("employee-" + tag).getBytes());
         IssueDto.CreateRequest createReq = new IssueDto.CreateRequest(
                 LocalDate.now(),
@@ -309,7 +316,7 @@ class IssueWorkflowIntegrationTest extends BaseIntegrationTest {
         );
 
         String createResp = mockMvc.perform(post("/api/store/issues")
-                        .header("Authorization", "Bearer " + storeOperatorToken)
+                        .header("Authorization", "Bearer " + storeManagerToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createReq)))
                 .andExpect(status().isCreated())
@@ -322,9 +329,9 @@ class IssueWorkflowIntegrationTest extends BaseIntegrationTest {
         UUID issueId     = UUID.fromString(objectMapper.readTree(createResp).get("id").asText());
         UUID issueItemId = UUID.fromString(objectMapper.readTree(createResp).get("items").get(0).get("id").asText());
 
-        // ── Phase 3: Submit (store.operator) ───────────────────────────────────
+        // ── Phase 3: Submit (store.manager) ─────────────────────────────────────
         mockMvc.perform(post("/api/store/issues/" + issueId + "/submit")
-                        .header("Authorization", "Bearer " + storeOperatorToken))
+                        .header("Authorization", "Bearer " + storeManagerToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("SUBMITTED"));
 
@@ -334,8 +341,11 @@ class IssueWorkflowIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("APPROVED"));
 
-        // ── Phase 5: Maker-Checker Guard — store.operator tries to POST → 403 ─
-        // The same operator who created the issue is blocked from posting it.
+        // ── Phase 5: Maker-Checker Guard — store.manager posts own issue → 403 ──
+        // The creator is stopped by the maker-checker rule in IssueService, not by
+        // authorization: store.manager holds ISSUE_POST, so it clears @PreAuthorize and
+        // reaches the guard. This is the step that could not be proven while @Secured
+        // was inert, because the old subject (store.operator) never held ISSUE_POST.
         String idemKey = "ISS-POST-" + issueId + "-" + tag;
         IssueDto.PostRequest postRequest = new IssueDto.PostRequest(
                 List.of(new IssueDto.LineAssetRequest(issueItemId, assetIds)),
@@ -343,16 +353,18 @@ class IssueWorkflowIntegrationTest extends BaseIntegrationTest {
         );
 
         mockMvc.perform(post("/api/store/issues/" + issueId + "/post")
-                        .header("Authorization", "Bearer " + storeOperatorToken)
+                        .header("Authorization", "Bearer " + storeManagerToken)
                         .header("Idempotency-Key", idemKey)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postRequest)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value("MAKER_CHECKER_VIOLATION"));
 
-        // ── Phase 6: Post by Manager (different user) ──────────────────────────
+        // ── Phase 6: Post by a different user (admin) ──────────────────────────
+        // admin is the only remaining holder of ISSUE_POST besides the maker, so it is
+        // the checker here. Same pattern as the stock-adjustment reversal test.
         String postResultJson = mockMvc.perform(post("/api/store/issues/" + issueId + "/post")
-                        .header("Authorization", "Bearer " + storeManagerToken)
+                        .header("Authorization", "Bearer " + adminToken)
                         .header("Idempotency-Key", idemKey)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postRequest)))
@@ -396,9 +408,12 @@ class IssueWorkflowIntegrationTest extends BaseIntegrationTest {
         assertThat(assignments).allMatch(a -> employeeId.equals(a.getAssigneeUserId()));
 
         // ── Phase 8: Idempotency Replay ────────────────────────────────────────
-        // Replaying with the same key must return identical fields WITHOUT modifying DB
+        // Replaying with the same key must return identical fields WITHOUT modifying DB.
+        // The replay is issued by admin, the same user as the committing post: the
+        // maker-checker guard runs before the "already POSTED" short-circuit, so the
+        // creator could never obtain the cached result.
         String replayJson = mockMvc.perform(post("/api/store/issues/" + issueId + "/post")
-                        .header("Authorization", "Bearer " + storeManagerToken)
+                        .header("Authorization", "Bearer " + adminToken)
                         .header("Idempotency-Key", idemKey)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postRequest)))

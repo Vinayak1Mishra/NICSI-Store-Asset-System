@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -41,7 +41,7 @@ public class IssueController {
     }
 
     @PostMapping
-    @Secured(Permissions.ISSUE_CREATE)
+    @PreAuthorize("hasAnyAuthority('" + Permissions.ISSUE_CREATE + "', '" + Permissions.STORE_ADMIN + "')")
     public ResponseEntity<IssueDto.Response> createIssue(
             @Valid @RequestBody IssueDto.CreateRequest request
     ) {
@@ -50,19 +50,19 @@ public class IssueController {
     }
 
     @PostMapping("/{id}/submit")
-    @Secured(Permissions.ISSUE_CREATE)
+    @PreAuthorize("hasAnyAuthority('" + Permissions.ISSUE_CREATE + "', '" + Permissions.STORE_ADMIN + "')")
     public ResponseEntity<IssueDto.Response> submitIssue(@PathVariable UUID id) {
         return ResponseEntity.ok(issueService.submitIssue(id));
     }
 
     @PostMapping("/{id}/approve")
-    @Secured(Permissions.ISSUE_APPROVE)
+    @PreAuthorize("hasAnyAuthority('" + Permissions.ISSUE_APPROVE + "', '" + Permissions.STORE_ADMIN + "')")
     public ResponseEntity<IssueDto.Response> approveIssue(@PathVariable UUID id) {
         return ResponseEntity.ok(issueService.approveIssue(id));
     }
 
     @PostMapping("/{id}/reject")
-    @Secured(Permissions.ISSUE_APPROVE)
+    @PreAuthorize("hasAnyAuthority('" + Permissions.ISSUE_APPROVE + "', '" + Permissions.STORE_ADMIN + "')")
     public ResponseEntity<IssueDto.Response> rejectIssue(
             @PathVariable UUID id,
             @RequestParam(required = false, defaultValue = "") String remarks
@@ -76,7 +76,7 @@ public class IssueController {
      */
     @PostMapping("/{id}/post")
     @IdempotentPost
-    @Secured(Permissions.ISSUE_POST)
+    @PreAuthorize("hasAnyAuthority('" + Permissions.ISSUE_POST + "', '" + Permissions.STORE_ADMIN + "')")
     public ResponseEntity<IssueDto.PostResult> postIssue(
             @PathVariable UUID id,
             @RequestBody(required = false) IssueDto.PostRequest request,
@@ -91,7 +91,7 @@ public class IssueController {
      * Digital acknowledgement of issued items by the recipient.
      */
     @PostMapping("/{id}/acknowledge")
-    @Secured(Permissions.ISSUE_CREATE)
+    @PreAuthorize("hasAnyAuthority('" + Permissions.ISSUE_CREATE + "', '" + Permissions.STORE_ADMIN + "')")
     public ResponseEntity<IssueDto.Response> acknowledgeIssue(
             @PathVariable UUID id,
             @Valid @RequestBody IssueDto.AcknowledgeRequest request
@@ -100,13 +100,13 @@ public class IssueController {
     }
 
     @GetMapping("/{id}")
-    @Secured(Permissions.ISSUE_CREATE)  // any issue participant can view
+    @PreAuthorize("hasAnyAuthority('" + Permissions.ISSUE_CREATE + "', '" + Permissions.STORE_ADMIN + "')")  // any issue participant can view
     public ResponseEntity<IssueDto.Response> getIssue(@PathVariable UUID id) {
         return ResponseEntity.ok(issueService.getIssue(id));
     }
 
     @GetMapping
-    @Secured(Permissions.ISSUE_CREATE)
+    @PreAuthorize("hasAnyAuthority('" + Permissions.ISSUE_CREATE + "', '" + Permissions.STORE_ADMIN + "')")
     public ResponseEntity<PageResponse<IssueDto.SummaryResponse>> searchIssues(
             @RequestParam(required = false) UUID storeId,
             @RequestParam(required = false) String status,

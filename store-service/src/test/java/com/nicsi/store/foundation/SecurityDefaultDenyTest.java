@@ -26,6 +26,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * request reached the dispatcher and the security filter let an anonymous caller through to
  * a routing miss, i.e. the endpoint is public-but-absent. A 401 proves the filter rejected
  * it first, so adding a controller on such a path later cannot silently expose it.
+ *
+ * /api/reports/** and /api/store/dashboard/** are covered here for the same reason. Both
+ * were briefly added to SecurityConfig as permitAll(), which undid this default-deny
+ * guarantee for those two prefixes. ReportController and DashboardController also carry
+ * @PreAuthorize, so an anonymous caller got 403 rather than data -- but the filter no
+ * longer required authentication at all, and any controller added to those prefixes later
+ * without a class-level annotation would have been silently public.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -60,6 +67,41 @@ class SecurityDefaultDenyTest extends BaseIntegrationTest {
     @DisplayName("Unauthenticated root path returns 401, not 404")
     void rootPathWithoutTokenIs401() throws Exception {
         mockMvc.perform(get("/"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Unauthenticated GET /api/reports/stock/current returns 401, not 404")
+    void reportCurrentStockWithoutTokenIs401() throws Exception {
+        mockMvc.perform(get("/api/reports/stock/current"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Unauthenticated GET /api/reports/assets/employee returns 401, not 404")
+    void reportEmployeeAssetsWithoutTokenIs401() throws Exception {
+        mockMvc.perform(get("/api/reports/assets/employee"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Unauthenticated GET /api/reports/dashboard/summary returns 401, not 404")
+    void reportDashboardSummaryWithoutTokenIs401() throws Exception {
+        mockMvc.perform(get("/api/reports/dashboard/summary"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Unauthenticated GET /api/store/dashboard/stats returns 401, not 404")
+    void storeDashboardStatsWithoutTokenIs401() throws Exception {
+        mockMvc.perform(get("/api/store/dashboard/stats"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Unauthenticated GET /api/dashboard/stats returns 401, not 404")
+    void dashboardStatsAliasWithoutTokenIs401() throws Exception {
+        mockMvc.perform(get("/api/dashboard/stats"))
                 .andExpect(status().isUnauthorized());
     }
 

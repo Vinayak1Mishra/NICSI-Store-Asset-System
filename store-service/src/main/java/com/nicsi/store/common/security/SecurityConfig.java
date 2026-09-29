@@ -58,8 +58,6 @@ public class SecurityConfig {
             }))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/store/dev/**").permitAll()
-                .requestMatchers("/api/reports/**").permitAll()
-                .requestMatchers("/api/store/dashboard/**").permitAll()
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 // Unmapped paths forward here on an ERROR dispatch. JwtAuthenticationFilter is a
                 // OncePerRequestFilter and does not re-run on ERROR, so without this the SecurityContext

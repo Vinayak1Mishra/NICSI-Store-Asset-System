@@ -196,7 +196,7 @@ public class ReportController {
         long lowStockItems= queryScalar("SELECT COUNT(*) FROM store.vw_low_stock" + (storeId != null ? " WHERE store_id = :storeId" : ""), p);
         long assetsIssued = queryScalar("SELECT COUNT(*) FROM store.asset WHERE asset_status = 'ISSUED'", new MapSqlParameterSource());
         long pendingReturns = queryScalar("SELECT COUNT(*) FROM store.return_header WHERE status IN ('SUBMITTED','RECEIVED')" + (storeId != null ? " AND store_id = :storeId" : ""), p);
-        long pendingGrns  = queryScalar("SELECT COUNT(*) FROM store.grn_header WHERE status IN ('DRAFT','SUBMITTED','INSPECTED')" + (storeId != null ? " AND store_id = :storeId" : ""), p);
+        long pendingGrns  = queryScalar("SELECT COUNT(*) FROM store.grn WHERE status IN ('DRAFT','SUBMITTED','UNDER_INSPECTION')" + (storeId != null ? " AND store_id = :storeId" : ""), p);
 
         return ResponseEntity.ok(Map.of(
                 "totalStockItems",   totalItems,

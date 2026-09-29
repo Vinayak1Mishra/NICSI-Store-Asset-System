@@ -78,7 +78,7 @@ public class AssetLifecycleIntegrationTest extends BaseIntegrationTest {
     @BeforeEach
     void setUp() throws Exception {
         adminToken = getToken("admin");
-        String tag = "LFC" + System.nanoTime() % 100000;
+        String tag = "LFC-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
         Uom uom = new Uom();
         uom.setUomCode("EA-" + tag);
